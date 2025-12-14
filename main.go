@@ -12,13 +12,24 @@ import (
 
 // init function
 func main() {
-	db,err := database.InitDB()
+	db, err := database.InitDB()
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer db.Close(context.Background())
-	repository := repository.NewRepositoryCategory(db)
-	service := service.NewServiceCategory(&repository)
-	handler := handler.NewHandlerCategory(&service)
-	cmd.HomePage(handler)
+	//for category
+	categoryrepository := repository.NewRepositoryCategory(db)
+	categoryservice := service.NewServiceCategory(&categoryrepository)
+	categoryHandler := handler.NewHandlerCategory(&categoryservice)
+	//for inventory
+	inventoryRepository := repository.NewRepositoryInventory(db)
+	inventoryService := service.NewServiceInventory(&inventoryRepository)
+	inventoryHandler := handler.NewHandlerInventory(&inventoryService)
+	allHandlers := handler.AllHandlers{ //ambil nanti di struct handler
+		Category:  categoryHandler,
+		Inventory: inventoryHandler,
+	}
+
+	// 5. Panggil fungsi pusat dengan container handler
+	cmd.HomePage(allHandlers)
 }

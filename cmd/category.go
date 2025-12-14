@@ -3,52 +3,73 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"os"
+	"time"
+
 	"inventory-system/handler"
 	"inventory-system/model"
 	"inventory-system/utils"
-	"time"
+
+	"github.com/olekukonko/tablewriter"
 )
 
-// GetAllCategory retrieves and displays all categories using the provided handler.
+// function to display all categories
 func GetAllCategory(handler handler.HandlerCategory) {
 	categories, err := handler.GetAllCategory()
 	if err != nil {
 		fmt.Println("Error fetching categories:", err)
 		return
 	}
-	fmt.Println("\nList of Categories:")
+
+	fmt.Println("\nLIST OF CATEGORIES")
+
+	table := tablewriter.NewWriter(os.Stdout)
+	table.Header("ID", "Category Name", "Description")
+
 	for _, category := range categories {
-		fmt.Printf("ID: %d, Name: %s, Description: %s\n", category.ID, category.Name, category.Description)
+		table.Append([]string{
+			fmt.Sprintf("%d", category.ID),
+			category.Name,
+			category.Description,
+		})
 	}
+
+	table.Render()
 }
 
-// CreateCategory prompts the user for category details and creates a new category using the provided handler.
+// function to create a new category
 func CreateCategory(handler handler.HandlerCategory) {
-	fmt.Println("--- Input Kategori Baru ---")
-	nameInput := utils.ReadLine("Masukkan Nama Kategori: ")
+	fmt.Println("\nCREATE NEW CATEGORY")
 
-	descInput := utils.ReadLine("Masukkan Deskripsi Kategori: ")
+	nameInput := utils.ReadLine("Enter Category Name: ")
+	descInput := utils.ReadLine("Enter Category Description: ")
 
-	// Buat struct baru dan ambil alamatnya (pointer)
 	newCategory := &model.Category{
 		Name:        nameInput,
 		Description: descInput,
 	}
 
-	// Panggil Handler (memberikan pointer ke struct)
-	// Ingat, handler.CreateCategory MENGUBAH struct ini (menambah ID/CreatedAt)
 	err := handler.CreateCategory(newCategory)
-
 	if err != nil {
-		fmt.Println("❌ Error saat membuat kategori:", err)
+		fmt.Println("Error creating category:", err)
 		return
 	}
 
-	fmt.Println("\n✅ Kategori berhasil dibuat!")
-	fmt.Printf("Detail Kategori Baru (termasuk ID dari DB): ID=%d, Nama=%s, Deskripsi=%s\n",
-		newCategory.ID, newCategory.Name, newCategory.Description)
+	fmt.Println("\nCATEGORY CREATED SUCCESSFULLY")
+
+	table := tablewriter.NewWriter(os.Stdout)
+	table.Header("ID", "Category Name", "Description")
+
+	table.Append([]string{
+		fmt.Sprintf("%d", newCategory.ID),
+		newCategory.Name,
+		newCategory.Description,
+	})
+
+	table.Render()
 }
 
+// function to get category by ID
 func GetCategoryByID(handler handler.HandlerCategory) {
 	var id int
 	fmt.Print("Enter Category ID: ")
@@ -64,9 +85,21 @@ func GetCategoryByID(handler handler.HandlerCategory) {
 		return
 	}
 
-	fmt.Printf("Category Details - ID: %d, Name: %s, Description: %s\n", id, category.Name, category.Description)
+	fmt.Println("\nCATEGORY DETAILS")
+
+	table := tablewriter.NewWriter(os.Stdout)
+	table.Header("ID", "Category Name", "Description")
+
+	table.Append([]string{
+		fmt.Sprintf("%d", id),
+		category.Name,
+		category.Description,
+	})
+
+	table.Render()
 }
 
+// function to update category by ID
 func UpdateCategory(handler handler.HandlerCategory) {
 	var id int
 	fmt.Print("Enter Category ID to update: ")
@@ -77,23 +110,22 @@ func UpdateCategory(handler handler.HandlerCategory) {
 	}
 
 	oldCategory, err := handler.GetCategoryByID(id)
-	updatedCategory := &model.Category{
-		Name:        oldCategory.Name,
-		Description: oldCategory.Description,
-	}
 	if err != nil {
 		fmt.Println("Error fetching category:", err)
 		return
 	}
-	nameInput := utils.ReadLine("Enter new Category Name: ")
-	descInput := utils.ReadLine("Enter new Category Description: ")
+
+	nameInput := utils.ReadLine("Enter new Category Name (leave empty to keep old): ")
+	descInput := utils.ReadLine("Enter new Category Description (leave empty to keep old): ")
+
 	if nameInput == "" {
 		nameInput = oldCategory.Name
 	}
 	if descInput == "" {
 		descInput = oldCategory.Description
 	}
-	updatedCategory = &model.Category{
+
+	updatedCategory := &model.Category{
 		Name:        nameInput,
 		Description: descInput,
 	}
@@ -104,18 +136,30 @@ func UpdateCategory(handler handler.HandlerCategory) {
 		return
 	}
 
-	fmt.Printf("Category updated successfully - ID: %d, Name: %s, Description: %s\n", id, updatedCategory.Name, updatedCategory.Description)
+	fmt.Println("\nCATEGORY UPDATED SUCCESSFULLY")
+
+	table := tablewriter.NewWriter(os.Stdout)
+	table.Header("ID", "Category Name", "Description")
+
+	table.Append([]string{
+		fmt.Sprintf("%d", id),
+		updatedCategory.Name,
+		updatedCategory.Description,
+	})
+
+	table.Render()
 }
 
+// function to delete category by ID
 func DeleteCategory(handler handler.HandlerCategory) {
 	var id int
-	fmt.Print("Enter Category ID: ")
+	fmt.Print("Enter Category ID to delete: ")
 	_, err := fmt.Scanln(&id)
 	if err != nil {
 		fmt.Println("Invalid input. Please enter a number.")
 		return
 	}
-	// Menggunakan context dengan timeout (Rekomendasi)
+
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -125,6 +169,14 @@ func DeleteCategory(handler handler.HandlerCategory) {
 		return
 	}
 
-	fmt.Printf("Success delete category - ID: %d\n", id)
+	fmt.Println("\nCATEGORY DELETED SUCCESSFULLY")
 
+	table := tablewriter.NewWriter(os.Stdout)
+	table.Header("Deleted Category ID")
+
+	table.Append([]string{
+		fmt.Sprintf("%d", id),
+	})
+
+	table.Render()
 }

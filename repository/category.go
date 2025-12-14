@@ -75,6 +75,7 @@ func (r *RepositoryCategory) CreateCategory(category *model.Category) error {
 
 }
 
+// GetCategoryByID retrieves a category by its ID from the database.
 func (r *RepositoryCategory) GetCategoryByID(id int) (*model.Category, error) {
 	query := `SELECT name,description FROM category WHERE category_id=$1;`
 
@@ -94,6 +95,7 @@ func (r *RepositoryCategory) GetCategoryByID(id int) (*model.Category, error) {
 	return &category, nil
 }
 
+// UpdateCategory updates an existing category in the database.
 func (r *RepositoryCategory) UpdateCategory(id int, category *model.Category) (*model.Category, error) {
 	query := `UPDATE category
 			 SET name=$1, description=$2, updated_at=$3
@@ -114,6 +116,8 @@ func (r *RepositoryCategory) UpdateCategory(id int, category *model.Category) (*
 	}
 	return &updatedCategory, nil
 }
+
+// DeleteCategory removes a category from the database by its ID.
 func (r *RepositoryCategory) DeleteCategory(ctx context.Context, id int) error {
 	query := `DELETE FROM category 
 			WHERE category_id=$1;

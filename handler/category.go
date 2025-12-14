@@ -42,6 +42,8 @@ func (h *HandlerCategory) CreateCategory(category *model.Category) error {
 	}
 	return nil
 }
+
+// GetCategoryByID retrieves a category by its ID using the service.
 func (h *HandlerCategory) GetCategoryByID(id int) (*model.Category, error) {
 	category, err := h.Service.GetCategoryByID(id)
 	if err != nil {
@@ -50,6 +52,7 @@ func (h *HandlerCategory) GetCategoryByID(id int) (*model.Category, error) {
 	return category, nil
 }
 
+// UpdateCategory updates an existing category using the service.
 func (h *HandlerCategory) UpdateCategory(id int, category *model.Category) (*model.Category, error) {
 	updatedCategory, err := h.Service.UpdateCategory(id, category)
 	if err != nil {
@@ -57,6 +60,8 @@ func (h *HandlerCategory) UpdateCategory(id int, category *model.Category) (*mod
 	}
 	return updatedCategory, nil
 }
+
+// DeleteCategory deletes a category by its ID using the service.
 func (h *HandlerCategory) DeleteCategory(ctx context.Context, id int) error {
 	err := h.Service.DeleteCategory(ctx, id)
 	if err != nil {

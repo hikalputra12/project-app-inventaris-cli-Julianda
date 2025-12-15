@@ -31,5 +31,6 @@ func main() {
 	}
 
 	// 5. Panggil fungsi pusat dengan container handler
-	cmd.HomePage(allHandlers)
+	cmd.Init(allHandlers)
+	cmd.Execute()
 }

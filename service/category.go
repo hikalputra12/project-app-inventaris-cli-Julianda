@@ -65,5 +65,4 @@ func (s *ServiceCategory) DeleteCategory(ctx context.Context, id int) error {
 		return err
 	}
 	return nil
-
 }

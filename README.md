@@ -80,3 +80,5 @@ CREATE TABLE inventory_items(
 	created_at timestamp default current_timestamp,
 	updated_at timestamp default current_timestamp
 );
+```
+## video tutorial : https://drive.google.com/file/d/1Tb6PBA-Mx_ks_e3Iq6jH_Zbe_it3PsNK/view?usp=sharing
